@@ -21,6 +21,7 @@ module SidekiqAlive
       SidekiqAlive.store_alive_key
       # Increment ttl for current registered instance
       SidekiqAlive.register_current_instance
+      File.write(SidekiqAlive.config.file_path, "healthy")
       # after callbacks
       begin
         config.callback.call

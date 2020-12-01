@@ -11,8 +11,8 @@ module SidekiqAlive
                   :time_to_live,
                   :callback,
                   :registered_instance_key,
+                  :file_path,
                   :queue_prefix,
-                  :server,
                   :custom_liveness_probe,
                   :logger,
                   :shutdown_callback
@@ -29,6 +29,7 @@ module SidekiqAlive
       @time_to_live = 10 * 60
       @callback = proc {}
       @registered_instance_key = "SIDEKIQ_REGISTERED_INSTANCE"
+      @file_path = "/tmp/worker_liveness"
       @queue_prefix = :"sidekiq-alive"
       @server = ENV.fetch("SIDEKIQ_ALIVE_SERVER", "webrick")
       @custom_liveness_probe = proc { true }
