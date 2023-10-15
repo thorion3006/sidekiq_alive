@@ -34,7 +34,6 @@ module SidekiqAlive
           store_alive_key
           # Passing the hostname argument it's only for debugging enqueued jobs
           SidekiqAlive::Worker.perform_async(hostname)
-          @server_pid = fork { SidekiqAlive::Server.run! }
 
           logger.info(successful_startup_text)
         end
@@ -45,9 +44,6 @@ module SidekiqAlive
         end
 
         sq_config.on(:shutdown) do
-          Process.kill("TERM", @server_pid) unless @server_pid.nil?
-          Process.wait(@server_pid) unless @server_pid.nil?
-
           unregister_current_instance
           config.shutdown_callback.call
         end
@@ -138,7 +134,6 @@ module SidekiqAlive
     def startup_info
       info = {
         hostname: hostname,
-        port: config.port,
         ttl: config.time_to_live,
         queue: current_queue,
         register_set: HOSTNAME_REGISTRY,
@@ -170,6 +165,5 @@ module SidekiqAlive
 end
 
 require "sidekiq_alive/worker"
-require "sidekiq_alive/server"
 
 SidekiqAlive.start unless ENV.fetch("DISABLE_SIDEKIQ_ALIVE", "").casecmp("true").zero?
